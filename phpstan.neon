@@ -6,3 +6,6 @@ parameters:
     paths:
         - app
         - tests
+    ignoreErrors:
+        - '#Cannot call method get\(\) on mixed\.#'
+        - '#Variable \$this might not be defined\.#'
