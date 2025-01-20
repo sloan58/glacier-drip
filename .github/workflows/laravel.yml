@@ -28,7 +28,7 @@ jobs:
           php-version: '8.4'
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite3, pdo_sqlite, mysql, pdo_mysql, bcmath, intl, exif, iconv
           coverage: none
-      
+
       - uses: actions/checkout@v3
 
       - name: Copy .env
