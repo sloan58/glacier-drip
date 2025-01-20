@@ -6,7 +6,3 @@ parameters:
     paths:
         - app
         - tests
-    excludePaths:
-        - vendor
-        - storage
-        - bootstrap/cache
