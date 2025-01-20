@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Panel;
+use Database\Factories\UserFactory;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable implements FilamentUser
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -23,6 +24,8 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'aws_access_key_id',
+        'aws_secret_access_key',
     ];
 
     /**
@@ -45,6 +48,8 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'aws_access_key_id' => 'encrypted',
+            'aws_secret_access_key' => 'encrypted',
         ];
     }
 
