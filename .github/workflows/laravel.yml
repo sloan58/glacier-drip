@@ -1,0 +1,123 @@
+name: Laravel CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: laravel_test
+          MYSQL_USER: user
+          MYSQL_PASSWORD: secret
+          MYSQL_ROOT_PASSWORD: secret
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, mysql, pdo_mysql, dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite3, pdo_mysql, bcmath, soap, intl, gd, exif, iconv
+          coverage: xdebug
+          tools: php-cs-fixer, phpunit
+          ini-values: error_reporting=E_ALL
+
+      - uses: actions/checkout@v3
+
+      - name: Configure PHP
+        run: |
+          echo "memory_limit=512M" | sudo tee -a /usr/local/etc/php/conf.d/custom.ini
+          echo "opcache.enable=1" | sudo tee -a /usr/local/etc/php/conf.d/custom.ini
+          echo "opcache.enable_cli=1" | sudo tee -a /usr/local/etc/php/conf.d/custom.ini
+
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Generate key
+        run: php artisan key:generate
+
+      - name: Directory Permissions
+        run: chmod -R 777 storage bootstrap/cache
+
+      - name: Create Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
+      - name: Run Migration and Seeder
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: laravel_test
+          DB_USERNAME: user
+          DB_PASSWORD: secret
+        run: |
+          php artisan migrate --force
+          php artisan db:seed --force
+
+      - name: Execute tests via Pest
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: laravel_test
+          DB_USERNAME: user
+          DB_PASSWORD: secret
+        run: vendor/bin/pest --coverage --min=80 --coverage-clover=coverage.xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: PHP Stan Analysis
+        run: |
+          composer require --dev phpstan/phpstan
+          vendor/bin/phpstan analyse --memory-limit=2G
+
+      - name: Check code style
+        run: |
+          composer require --dev laravel/pint
+          vendor/bin/pint --test
+
+      - name: Check for security vulnerabilities
+        run: |
+          composer audit
+
+  deploy:
+    needs: laravel-tests
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Cleavr
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: '${{ secrets.CLEAVR_WEBHOOK_URL }}'
+          method: 'POST'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: '{"trigger": "github-actions"}'
