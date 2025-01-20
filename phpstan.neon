@@ -1,5 +1,5 @@
 includes:
-    - vendor/nunomaduro/larastan/extension.neon
+    - vendor/larastan/larastan/extension.neon
 
 parameters:
     level: 5
@@ -10,5 +10,3 @@ parameters:
         - vendor
         - storage
         - bootstrap/cache
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false

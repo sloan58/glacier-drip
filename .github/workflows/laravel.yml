@@ -95,7 +95,8 @@ jobs:
 
       - name: PHP Stan Analysis
         run: |
-          composer require --dev phpstan/phpstan
+          composer remove nunomaduro/larastan --dev
+          composer require --dev larastan/larastan
           vendor/bin/phpstan analyse --memory-limit=2G
 
       - name: Check code style
