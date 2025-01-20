@@ -35,9 +35,8 @@ jobs:
 
       - name: Configure PHP
         run: |
-          echo "memory_limit=512M" | sudo tee -a /usr/local/etc/php/conf.d/custom.ini
-          echo "opcache.enable=1" | sudo tee -a /usr/local/etc/php/conf.d/custom.ini
-          echo "opcache.enable_cli=1" | sudo tee -a /usr/local/etc/php/conf.d/custom.ini
+          echo "memory_limit=512M" >> $GITHUB_OUTPUT
+          php -d memory_limit=512M
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
