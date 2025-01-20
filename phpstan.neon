@@ -7,5 +7,5 @@ parameters:
         - app
         - tests
     ignoreErrors:
-        - '#Cannot call method get\(\) on mixed\.#'
-        - '#Variable \$this might not be defined\.#'
+        - '#Call to an undefined method PHPUnit\\Framework\\TestCase::get\(\)#'
+        - '#Undefined variable: \$this#'
