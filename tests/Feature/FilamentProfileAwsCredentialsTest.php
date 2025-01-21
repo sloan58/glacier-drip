@@ -8,13 +8,11 @@ use function Pest\Livewire\livewire;
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 it('allows the authenticated user to update their AWS credentials through the Livewire component', function () {
-    // Create a user
     $user = User::factory()->create();
 
-    // Simulate logging in as the user
     actingAs($user);
 
-    // Interact with the Livewire component
+    // @phpstan-ignore-next-line
     livewire(AwsCredentials::class)
         ->fillForm([
             'aws_access_key_id' => 'new-access-key',
@@ -24,7 +22,6 @@ it('allows the authenticated user to update their AWS credentials through the Li
         ->assertHasNoErrors()
         ->assertStatus(200);
 
-    // Verify the user's credentials were updated in the database
     // TODO: Test the encrypted values
 //    $this->assertDatabaseHas('users', [
 //        'id' => $user->id,
@@ -38,10 +35,9 @@ it('prevents unauthorized users from updating AWS credentials through the Livewi
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
 
-    // Simulate logging in as another user
     actingAs($otherUser);
 
-    // Attempt to update the first user's credentials
+    // @phpstan-ignore-next-line
     livewire(AwsCredentials::class)
         ->fillForm([
             'aws_access_key_id' => 'new-access-key',
@@ -50,7 +46,7 @@ it('prevents unauthorized users from updating AWS credentials through the Livewi
         ->call('submit')
         ->assertStatus(200);
 
-    // Verify the credentials were not updated in the database
+    // @phpstan-ignore-next-line
     $this->assertDatabaseMissing('users', [
         'id' => $user->id,
         'aws_access_key_id' => 'malicious-access-key',

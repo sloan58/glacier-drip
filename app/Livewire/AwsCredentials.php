@@ -4,10 +4,14 @@ namespace App\Livewire;
 
 use Filament\Forms\Form;
 use Filament\Facades\Filament;
+use Filament\Forms\ComponentContainer;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Jeffgreco13\FilamentBreezy\Livewire\MyProfileComponent;
 
+/**
+ * @property ComponentContainer $form
+ */
 class AwsCredentials extends MyProfileComponent
 {
     protected string $view = "livewire.aws-credentials";
@@ -21,7 +25,6 @@ class AwsCredentials extends MyProfileComponent
     {
         $this->user = Filament::getCurrentPanel()->auth()->user();
         $this->userClass = get_class($this->user);
-
         $this->form->fill($this->user->only($this->only));
     }
 
@@ -31,7 +34,7 @@ class AwsCredentials extends MyProfileComponent
             ->schema([
                 TextInput::make('aws_access_key_id')->label('AWS Access Key'),
                 TextInput::make('aws_secret_access_key')->label('AWS Secret Key')
-                ->password()
+                    ->password()
             ])
             ->statePath('data');
     }
