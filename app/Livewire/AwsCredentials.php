@@ -45,7 +45,7 @@ class AwsCredentials extends MyProfileComponent
                     ->label('AWS Region')
                     ->searchable()
                     ->options(config('aws.regions')),
-                TextInput::make('aws_bucket')->label('AWS S3 Bucket'),
+                TextInput::make('aws_s3_bucket')->label('AWS S3 Bucket')->readOnly(),
             ])
             ->statePath('data');
     }
