@@ -16,7 +16,9 @@ it('allows the authenticated user to update their AWS credentials through the Li
     livewire(AwsCredentials::class)
         ->fillForm([
             'aws_access_key_id' => 'new-access-key',
-            'aws_secret_access_key' => 'new-secret-key'
+            'aws_secret_access_key' => 'new-secret-key',
+            'aws_region' => 'eu-west-1',
+            'aws_s3_bucket' => 'test-bucket',
         ])
         ->call('submit')
         ->assertHasNoErrors()
@@ -41,7 +43,9 @@ it('prevents unauthorized users from updating AWS credentials through the Livewi
     livewire(AwsCredentials::class)
         ->fillForm([
             'aws_access_key_id' => 'new-access-key',
-            'aws_secret_access_key' => 'new-secret-key'
+            'aws_secret_access_key' => 'new-secret-key',
+            'aws_region' => 'eu-west-1',
+            'aws_s3_bucket' => 'test-bucket',
         ])
         ->call('submit')
         ->assertStatus(200);
