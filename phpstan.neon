@@ -5,7 +5,5 @@ parameters:
     level: 5
     paths:
         - app
-        - tests
     ignoreErrors:
-        - '#Call to an undefined method PHPUnit\\Framework\\TestCase::get\(\)#'
-        - '#Undefined variable: \$this#'
+        - '#Access to an undefined property App\\Filament\\Pages\\Onboarding::\$form#'
