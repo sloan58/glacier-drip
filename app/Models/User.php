@@ -59,4 +59,12 @@ class User extends Authenticatable implements FilamentUser
     {
         return true;
     }
+
+    public function getNeedsAwsCredentialsAttribute(): bool
+    {
+        return empty($this->aws_access_key_id)
+            || empty($this->aws_secret_access_key)
+            || empty($this->aws_region)
+            || empty($this->aws_s3_bucket);
+    }
 }

@@ -41,4 +41,17 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /*
+     * A user that has completed onboarding
+     */
+    public function onboarded(): Factory|UserFactory
+    {
+        return $this->state(fn (array $attributes) => [
+            'aws_access_key_id' => 'new-access-key',
+            'aws_secret_access_key' => 'new-secret-key',
+            'aws_region' => 'eu-west-1',
+            'aws_s3_bucket' => 'test-bucket',
+        ]);
+    }
 }

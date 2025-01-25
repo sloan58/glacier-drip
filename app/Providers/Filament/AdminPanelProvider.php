@@ -9,6 +9,7 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
+use App\Http\Middleware\OnboardingMiddleware;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -26,7 +27,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path('')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -54,6 +55,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                OnboardingMiddleware::class,
             ])
             ->plugin(
                 BreezyCore::make()
@@ -64,6 +66,8 @@ class AdminPanelProvider extends PanelProvider
                         \App\Livewire\AwsCredentials::class
                     ])
                     ->enableTwoFactorAuthentication(condition: false)
-            );
+            )
+            ->sidebarFullyCollapsibleOnDesktop()
+            ;
     }
 }

@@ -8,7 +8,7 @@ use function Pest\Livewire\livewire;
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 it('allows the authenticated user to update their AWS credentials through the Livewire component', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->onboarded()->create();
 
     actingAs($user);
 
