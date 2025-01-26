@@ -73,7 +73,7 @@ class AwsCredentials extends MyProfileComponent implements HasActions
                     'aws_region' => null,
                     'aws_s3_bucket' => null,
                 ]);
-                redirect()->back();
+                return redirect()->route('filament.admin.pages.onboarding');
             });
     }
 
