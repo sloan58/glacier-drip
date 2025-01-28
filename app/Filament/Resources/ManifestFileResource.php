@@ -2,16 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ManifestFileResource\Pages;
-use App\Filament\Resources\ManifestFileResource\RelationManagers;
-use App\Models\ManifestFile;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ManifestFile;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ManifestFileResource\Pages;
 
 class ManifestFileResource extends Resource
 {
@@ -37,9 +35,19 @@ class ManifestFileResource extends Resource
             ]);
     }
 
+
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $user = auth()->user();
+
+                if (!$user->hasRole('admin')) {
+                    return $query->where('user_id', $user->id);
+                }
+
+                return $query;
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('archive_id')
                     ->searchable(),

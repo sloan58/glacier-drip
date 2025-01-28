@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('size');
             $table->string('sha256_tree_hash')->nullable();
             $table->timestamp('creation_date')->nullable();
+            $table->foreignIdFor(\App\Models\User::class);
             $table->timestamps();
         });
     }

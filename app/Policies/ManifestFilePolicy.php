@@ -19,16 +19,16 @@ class ManifestFilePolicy
 
     public function create(User $user): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasAnyRole('admin', 'user');
     }
 
     public function update(User $user, ManifestFile $manifestFile): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('admin') || $user->id === $manifestFile->user_id;
     }
 
     public function delete(User $user, ManifestFile $manifestFile): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('admin') || $user->id === $manifestFile->user_id;
     }
 }
