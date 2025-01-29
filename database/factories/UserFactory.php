@@ -2,9 +2,11 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -37,7 +39,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }
@@ -47,11 +49,22 @@ class UserFactory extends Factory
      */
     public function onboarded(): Factory|UserFactory
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'aws_access_key_id' => 'new-access-key',
             'aws_secret_access_key' => 'new-secret-key',
             'aws_region' => 'eu-west-1',
             'aws_s3_bucket' => 'test-bucket',
         ]);
+    }
+
+    /*
+     * A user with admin role
+     */
+    public function admin(): Factory|UserFactory
+    {
+        return $this->afterCreating(function (User $user) {
+            $role = Role::firstOrCreate(['name' => 'admin']);
+            $user->assignRole($role);
+        });
     }
 }

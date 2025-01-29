@@ -8,6 +8,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OnboardingMiddleware
 {
+    protected array $passThroughRoutes = [
+        'filament.admin.auth.logout'
+    ];
+
     /**
      * Handle an incoming request.
      *
@@ -15,12 +19,25 @@ class OnboardingMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $onboardingRoute = 'filament.admin.pages.onboarding';
-
-        if (auth()->user()->needs_aws_credentials && $request->route()->getName() != $onboardingRoute) {
-            return redirect()->route($onboardingRoute);
+        if ($this->shouldRedirect($request)) {
+            return redirect()->route('filament.admin.pages.onboarding');
         }
 
         return $next($request);
+    }
+
+    protected function shouldRedirect(Request $request): bool
+    {
+        $user = auth()->user();
+
+        return $user
+            && !$user->hasRole('admin')
+            && $user->needs_aws_credentials
+            && !$this->isPassThroughRoute($request);
+    }
+
+    protected function isPassThroughRoute(Request $request): bool
+    {
+        return in_array($request->route()?->getName(), $this->passThroughRoutes, true);
     }
 }

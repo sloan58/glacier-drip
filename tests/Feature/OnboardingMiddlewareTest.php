@@ -6,6 +6,20 @@ use Illuminate\Support\Facades\Route;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
+it('does not redirect admin users', function () {
+    // Create admin user
+    $user = User::factory()->admin()->create();
+
+    // Simulate logging in as the user
+    actingAs($user);
+
+    // Attempt to access the protected route
+    $response = get('/');
+
+    // Assert the user can access /
+    $response->assertSuccessful();
+});
+
 it('redirects users with needs_aws_credentials=true to the onboarding route', function () {
     // Create a user with needs_aws_credentials set to true
     $user = User::factory()->create();

@@ -9,10 +9,15 @@ use Filament\Tables\Table;
 use App\Models\ManifestFile;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use App\Http\Middleware\OnboardingMiddleware;
 use App\Filament\Resources\ManifestFileResource\Pages;
 
 class ManifestFileResource extends Resource
 {
+    protected static string | array $withoutRouteMiddleware = [
+        OnboardingMiddleware::class
+    ];
+
     protected static ?string $model = ManifestFile::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

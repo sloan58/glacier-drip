@@ -26,7 +26,7 @@ class AdminSeeder extends Seeder
         // Assign the admin role to the user
         $adminUser->assignRole($adminRole);
 
-        // Output the admin credentials (optional)
+        // Output the admin credentials
         $this->command->info("Admin user created:");
         $this->command->info("Email: admin@example.com");
         $this->command->info("Password: password");
