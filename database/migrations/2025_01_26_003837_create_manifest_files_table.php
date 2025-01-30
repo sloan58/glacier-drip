@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('manifest_files', function (Blueprint $table) {
             $table->id();
-            $table->string('archive_id')->unique();
-            $table->string('description')->nullable();
-            $table->unsignedBigInteger('size');
-            $table->string('sha256_tree_hash')->nullable();
+            $table->string('archive_id')->default('-');
+            $table->string('description')->default('-');
+            $table->unsignedBigInteger('size')->default(0);
+            $table->string('sha256_tree_hash')->default('-');
             $table->timestamp('creation_date')->nullable();
             $table->foreignIdFor(\App\Models\User::class);
+            $table->string('status')->default('processing');
+            $table->text('error_message')->nullable();
             $table->timestamps();
+            $table->unique(['archive_id', 'user_id']);
         });
     }
 

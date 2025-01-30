@@ -7,6 +7,7 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\ManifestFile;
+use App\Enums\ManifestStatus;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Middleware\OnboardingMiddleware;
@@ -14,7 +15,7 @@ use App\Filament\Resources\ManifestFileResource\Pages;
 
 class ManifestFileResource extends Resource
 {
-    protected static string | array $withoutRouteMiddleware = [
+    protected static string|array $withoutRouteMiddleware = [
         OnboardingMiddleware::class
     ];
 
@@ -44,6 +45,7 @@ class ManifestFileResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->poll()
             ->modifyQueryUsing(function (Builder $query) {
                 $user = auth()->user();
 
@@ -54,6 +56,15 @@ class ManifestFileResource extends Resource
                 return $query;
             })
             ->columns([
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->formatStateUsing(fn($state) => strtoupper($state)) // Optional: Convert to uppercase
+                    ->color(fn($state) => match ($state) {
+                        ManifestStatus::PROCESSING->value => 'warning',
+                        ManifestStatus::FINISHED->value => 'success',
+                        ManifestStatus::ERROR->value => 'danger',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('archive_id')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
@@ -67,13 +78,12 @@ class ManifestFileResource extends Resource
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Request On')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('duration')
+                    ->label('Time Elapsed')
+                    ->getStateUsing(fn($record) => $record->created_at->diffForHumans())
             ])
             ->filters([
                 //
@@ -99,6 +109,7 @@ class ManifestFileResource extends Resource
     {
         return [
             'index' => Pages\ListManifestFiles::route('/'),
+            'create' => Pages\CreateManifestFile::route('/create'),
             'edit' => Pages\EditManifestFile::route('/{record}/edit'),
         ];
     }
