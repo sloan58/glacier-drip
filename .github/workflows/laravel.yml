@@ -56,11 +56,11 @@ jobs:
       - name: Static Analysis
         run: vendor/bin/phpstan analyse
 
-      - name: Deploy to Cleavr
-        if: github.ref == 'refs/heads/main'
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: '${{ secrets.CLEAVR_WEBHOOK_URL }}'
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"trigger": "github-actions"}'
+#      - name: Deploy to Cleavr
+#        if: github.ref == 'refs/heads/main'
+#        uses: fjogeleit/http-request-action@v1
+#        with:
+#          url: '${{ secrets.CLEAVR_WEBHOOK_URL }}'
+#          method: 'POST'
+#          customHeaders: '{"Content-Type": "application/json"}'
+#          data: '{"trigger": "github-actions"}'
