@@ -13,26 +13,27 @@ class ListManifestFiles extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\Action::make('request-manifest')
-                ->label('Request Manifest')
-                ->requiresConfirmation()
-                ->modalDescription('This will request a new manifest file from AWS.  It may take several hours to download')
-                ->action(function() {
-                    try {
-                        auth()->user()->manifestFiles()->create();
-                        Notification::make()
-                            ->title('Manifest Requested!')
-                            ->success()
-                            ->send();
-                    } catch (\Exception $exception) {
-                        logger()->error($exception->getMessage());
-                        Notification::make()
-                            ->title('Oops, something went wrong...')
-                            ->danger()
-                            ->send();
-                    }
-                }),
-        ];
+        return auth()->user()->needs_aws_credentials ? [] :
+            [
+                Actions\Action::make('request-manifest')
+                    ->label('Request Manifest')
+                    ->requiresConfirmation()
+                    ->modalDescription('This will request a new manifest file from AWS.  It may take several hours to download')
+                    ->action(function () {
+                        try {
+                            auth()->user()->manifestFiles()->create();
+                            Notification::make()
+                                ->title('Manifest Requested!')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $exception) {
+                            logger()->error($exception->getMessage());
+                            Notification::make()
+                                ->title('Oops, something went wrong...')
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+            ];
     }
 }

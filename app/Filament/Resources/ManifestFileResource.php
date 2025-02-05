@@ -56,6 +56,9 @@ class ManifestFileResource extends Resource
                 return $query;
             })
             ->columns([
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Username')
+                    ->visible(auth()->user()->hasRole('admin')),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn($state) => strtoupper($state)) // Optional: Convert to uppercase

@@ -33,7 +33,7 @@ class OnboardingMiddleware
         return $user
             && !$user->hasRole('admin')
             && $user->needs_aws_credentials
-            && !$this->isPassThroughRoute($request);
+            && !$request->route()?->getName() == 'filament.admin.auth.logout';
     }
 
     protected function isPassThroughRoute(Request $request): bool
